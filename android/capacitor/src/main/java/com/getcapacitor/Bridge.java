@@ -165,9 +165,12 @@ public class Bridge {
     String[] appAllowNavigationConfig = Config.getArray("server.allowNavigation");
 
     ArrayList<String> authorities = new ArrayList<String>();
+    /* The appAllowNavigationConfig tells which URLs we want to navigate to without leaving the web view.
+       It does not mean that we want Capacitor to run these URLs through WebViewLocalServer.handleProxyRequest.
     if (appAllowNavigationConfig != null) {
       authorities.addAll(Arrays.asList(appAllowNavigationConfig));
     }
+    */
     this.appAllowNavigationMask = HostMask.Parser.parse(appAllowNavigationConfig);
 
     String authority = Config.getString("server.hostname", "localhost");
