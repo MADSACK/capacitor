@@ -1,3 +1,12 @@
+---
+title: Push Notifications
+description: Push Notifications API
+url: /docs/apis/push-notifications
+contributors:
+  - mlynch
+  - jcesarmobile
+---
+
 <plugin-platforms platforms="ios,android"></plugin-platforms>
 
 # Push Notifications
@@ -18,7 +27,7 @@ On Android just download your app's `google-services.json` file from Firebase co
 
 On Android, the Push Notifications icon with the appropriate name should be added to the `AndroidManifest.xml` file:
 
-```
+```xml
 <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@mipmap/push_icon_name" />
 ```
 
@@ -42,7 +51,7 @@ On iOS you can configure the way the push notifications are displayed when the a
 
 Possible values are:
 * `badge`: badge count on the app icon is updated (default value)
-* `sound`: the devide will ring/vibrate when the push notification is received
+* `sound`: the device will ring/vibrate when the push notification is received
 * `alert`: the push notification is displayed in a native dialog
 
 An empty Array can be provided if none of the previous options are desired. `pushNotificationReceived` event will still be fired with the push notification information.

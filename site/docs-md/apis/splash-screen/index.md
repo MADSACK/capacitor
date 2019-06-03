@@ -1,8 +1,19 @@
-<plugin-api index="true" name="splash-screen"></plugin-api>
+---
+title: Splash Screen
+description: Splash Screen API
+url: /docs/apis/splash-screen
+contributors:
+  - mlynch
+  - jcesarmobile
+---
+
+<plugin-platforms platforms="pwa,ios,android,electron"></plugin-platforms>
 
 # Splash Screen
 
 The Splash Screen API provides methods for showing or hiding a Splash image.
+
+<plugin-api index="true" name="splash-screen"></plugin-api>
 
 ## Example
 
@@ -86,14 +97,14 @@ If your splash screen images aren't named "splash.png" but for example "screen.p
 `android/app/src/main/res/drawable/launch_splash.xml` 
 
 replace
-```
+```xml
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
     android:src="@drawable/splash"
     android:scaleType="centerCrop"
     />
 ```
 with
-```
+```xml
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
     android:src="@drawable/screen"
     android:scaleType="centerCrop"
@@ -103,13 +114,13 @@ with
 `android/app/src/main/res/values/styles.xml` 
 
 replace
-```
+```xml
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
         <item name="android:background">@drawable/splash</item>
     </style>
 ```
 with
-```
+```xml
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
         <item name="android:background">@drawable/screen</item>
     </style>

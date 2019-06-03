@@ -1,29 +1,29 @@
 import { Plugin, PluginListenerHandle } from './definitions';
 
 export interface PluginRegistry {
-  Accessibility?: AccessibilityPlugin;
-  App?: AppPlugin;
-  BackgroundTask?: BackgroundTaskPlugin;
-  Browser?: BrowserPlugin;
-  Camera?: CameraPlugin;
-  Clipboard?: ClipboardPlugin;
-  Device?: DevicePlugin;
-  Filesystem?: FilesystemPlugin;
-  Geolocation?: GeolocationPlugin;
-  Haptics?: HapticsPlugin;
-  Keyboard?: KeyboardPlugin;
-  LocalNotifications?: LocalNotificationsPlugin;
-  Modals?: ModalsPlugin;
-  Motion?: MotionPlugin;
-  Network?: NetworkPlugin;
-  Photos?: PhotosPlugin;
-  PushNotifications?: PushNotificationsPlugin;
-  Share?: SharePlugin;
-  SplashScreen?: SplashScreenPlugin;
-  StatusBar?: StatusBarPlugin;
-  Storage?: StoragePlugin;
-  Toast?: ToastPlugin;
-  WebView?: WebViewPlugin;
+  Accessibility: AccessibilityPlugin;
+  App: AppPlugin;
+  BackgroundTask: BackgroundTaskPlugin;
+  Browser: BrowserPlugin;
+  Camera: CameraPlugin;
+  Clipboard: ClipboardPlugin;
+  Device: DevicePlugin;
+  Filesystem: FilesystemPlugin;
+  Geolocation: GeolocationPlugin;
+  Haptics: HapticsPlugin;
+  Keyboard: KeyboardPlugin;
+  LocalNotifications: LocalNotificationsPlugin;
+  Modals: ModalsPlugin;
+  Motion: MotionPlugin;
+  Network: NetworkPlugin;
+  Photos: PhotosPlugin;
+  PushNotifications: PushNotificationsPlugin;
+  Share: SharePlugin;
+  SplashScreen: SplashScreenPlugin;
+  StatusBar: StatusBarPlugin;
+  Storage: StoragePlugin;
+  Toast: ToastPlugin;
+  WebView: WebViewPlugin;
 
   [pluginName: string]: {
     [prop: string]: any;
@@ -857,6 +857,15 @@ export interface KeyboardPlugin extends Plugin {
    * the accessory bar for short forms (login, signup, etc.) to provide a cleaner UI
    */
   setAccessoryBarVisible(options: { isVisible: boolean }): Promise<void>;
+
+  addListener(eventName: 'keyboardWillShow', listenerFunc: (info: KeyboardInfo) => void): PluginListenerHandle;
+  addListener(eventName: 'keyboardDidShow', listenerFunc: (info: KeyboardInfo) => void): PluginListenerHandle;
+  addListener(eventName: 'keyboardWillHide', listenerFunc: () => void): PluginListenerHandle;
+  addListener(eventName: 'keyboardDidHide', listenerFunc: () => void): PluginListenerHandle;
+}
+
+export interface KeyboardInfo {
+  keyboardHeight: number;
 }
 
 //
@@ -1453,7 +1462,7 @@ export interface StoragePlugin extends Plugin {
   /**
    * Get the value with the given key.
    */
-  get(options: { key: string }): Promise<{ value: string }>;
+  get(options: { key: string }): Promise<{ value: string | null }>;
   /**
    * Set the value for the given key
    */

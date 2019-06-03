@@ -1,6 +1,15 @@
+---
+title: Building Progressive Web Apps
+description: How to build Progressive Web Apps with Capacitor
+url: /docs/basics/progressive-web-app
+contributors:
+  - jcesarmobile
+  - dotnetkow
+---
+
 # Building Progressive Web Apps
 
-Capacitor has first-class support for Progressive Web Apps, making it easy to build an app that runs natively on iOS and Android, but also on the web as a mobile web app or "Progressive Web App."
+<p class="intro">Capacitor has first-class support for Progressive Web Apps, making it easy to build an app that runs natively on iOS and Android, but also on the web as a mobile web app or "Progressive Web App."</p>
 
 ## What is a Progressive Web App?
 
@@ -42,7 +51,7 @@ Progressive Web Apps are judged by several performance standards, including [Tim
 
 Follow the [Progressive Web App Checklist](https://developers.google.com/web/progressive-web-apps/checklist) before going live, and use [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to audit and test your app.
 
-If you're struggling to meet Progressive Web App performance standards with your existing frontend stack, take a look at [Ionic Framework](http://ionicframework.com/) version 4 (in beta at the time of this writing) or greater as an option for getting fast PWA support with nearly zero configuration. Ionic 4.x or above is a web component library that works in several popular frontend frameworks, not just Angular.
+If you're struggling to meet Progressive Web App performance standards with your existing frontend stack, take a look at [Ionic Framework](http://ionicframework.com/) version 4 or greater as an option for getting fast PWA support with nearly zero configuration. Ionic 4.x or above is a web component library that works in several popular frontend frameworks, not just Angular.
 
 ## Running Natively and on the Web
 

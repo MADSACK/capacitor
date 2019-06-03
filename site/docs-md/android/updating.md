@@ -1,12 +1,21 @@
+---
+title: Updating Your Capacitor Android Project
+description: Updating Your Capacitor Android Project
+url: /docs/android/updating
+contributors:
+  - mlynch
+  - jcesarmobile
+---
+
 # Updating Your Capacitor Android Project
 
-Occasionally, you'll need to make Capacitor updates to your Android app, including updating the version of Capacitor used in your app, or using new ways of interfacing with Capacitor inside of your Android codebase.
+<p class="intro">Occasionally, you'll need to make Capacitor updates to your Android app, including updating the version of Capacitor used in your app, or using new ways of interfacing with Capacitor inside of your Android codebase.</a>
 
 ## Updating Capacitor Library
 
 To update the version of Capacitor used in your app, just npm install latest version:
 
-```
+```bash
 npm install --save @capacitor/android@latest
 ```
 
