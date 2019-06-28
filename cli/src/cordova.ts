@@ -2,7 +2,7 @@ import { Config } from './config';
 import { getJSModules, getPlatformElement, getPluginPlatform, getPlugins, getPluginType, printPlugins, Plugin, PluginType } from './plugin';
 import { copySync, ensureDirSync, readFileAsync, removeSync, writeFileAsync } from './util/fs';
 import { join, resolve } from 'path';
-import { buildXmlElement, installDeps, log, logError, logFatal, logInfo, readXML, resolveNode, writeXML } from './common';
+import { buildXmlElement, installDeps, log, logError, logFatal, logInfo, logWarn, readXML, resolveNode, writeXML } from './common';
 import { copy as fsCopy, existsSync } from 'fs-extra';
 import { getAndroidPlugins } from './android/common';
 import { getIOSPlugins } from './ios/common';
@@ -27,6 +27,7 @@ export function generateCordovaPluginsJSFile(config: Config, plugins: Plugin[], 
       let mergesModule = '';
       let runsModule = '';
       let clobberKey = '';
+      let mergeKey = '';
       if (jsModule.clobbers) {
         jsModule.clobbers.map((clobber: any) => {
           clobbers.push(clobber.$.target);
@@ -40,6 +41,7 @@ export function generateCordovaPluginsJSFile(config: Config, plugins: Plugin[], 
       if (jsModule.merges) {
         jsModule.merges.map((merge: any) => {
           merges.push(merge.$.target);
+          mergeKey = merge.$.target;
         });
         mergesModule = `,
         "merges": [
@@ -49,11 +51,15 @@ export function generateCordovaPluginsJSFile(config: Config, plugins: Plugin[], 
       if (jsModule.runs) {
         runsModule = ',\n        "runs": true';
       }
-      const pluginModule = { clobber: clobberKey, pluginContent: `{
-        "id": "${pluginId}.${jsModule.$.name}",
-        "file": "plugins/${pluginId}/${jsModule.$.src}",
-        "pluginId": "${pluginId}"${clobbersModule}${mergesModule}${runsModule}
-      }`};
+      const pluginModule = { 
+        clobber: clobberKey,
+        merge: mergeKey,
+        pluginContent: `{
+          "id": "${pluginId}.${jsModule.$.name}",
+          "file": "plugins/${pluginId}/${jsModule.$.src}",
+          "pluginId": "${pluginId}"${clobbersModule}${mergesModule}${runsModule}
+        }`
+      };
       pluginModules.push(pluginModule);
     });
     pluginExports.push(`"${pluginId}": "${p.xml.$.version}"`);
@@ -61,7 +67,17 @@ export function generateCordovaPluginsJSFile(config: Config, plugins: Plugin[], 
   return `
   cordova.define('cordova/plugin_list', function(require, exports, module) {
     module.exports = [
-      ${pluginModules.sort((a, b) => a.clobber.localeCompare(b.clobber)).map(e => e.pluginContent).join(',\n      ')}
+      ${pluginModules
+        .sort(
+          (a, b) => (a.clobber && b.clobber) // Clobbers in alpha order
+            ? a.clobber.localeCompare(b.clobber)
+            : ( (a.clobber || b.clobber) // Clobbers before anything else
+                  ? b.clobber.localeCompare(a.clobber)
+                  : a.merge.localeCompare(b.merge) // Merges in alpha order
+              )
+        )
+        .map(e => e.pluginContent)
+        .join(',\n      ')}
     ];
     module.exports.metadata =
     // TOP OF METADATA
@@ -140,8 +156,10 @@ export async function autoGenerateConfig(config: Config, cordovaPlugins: Plugin[
       if (configFiles) {
         const configXMLEntries = configFiles.filter(function(item: any) { return item.$ && item.$.target.includes(fileName); });
         configXMLEntries.map(  (entry: any)  => {
-          const feature = { feature: entry.feature };
-          pluginEntries.push(feature);
+          if(entry.feature) {
+            const feature = { feature: entry.feature };
+            pluginEntries.push(feature);
+          }
         });
       }
     }
@@ -222,7 +240,7 @@ async function logiOSPlist (configElement: any, config: Config, plugin: Plugin) 
   if (!dict.key.includes(configElement.$.parent)) {
     let xml = buildConfigFileXml(configElement);
     xml = `<key>${configElement.$.parent}</key>${getConfigFileTagContent(xml)}`;
-    logInfo(`Plugin ${plugin.id} requires you to add \n  ${xml} to your Info.plist to work`);
+    logWarn(`Plugin ${plugin.id} requires you to add \n  ${xml} to your Info.plist to work`);
   } else if (configElement.array || configElement.dict) {
     if (configElement.array && configElement.array[0] && configElement.array[0].string) {
         var xml = "";
@@ -232,7 +250,7 @@ async function logiOSPlist (configElement: any, config: Config, plugin: Plugin) 
           }
         });
         if (xml.length > 0) {
-          logInfo(`Plugin ${plugin.id} require you to add \n${xml} in the existing ${chalk.bold(configElement.$.parent)} array of your Info.plist to work`);
+          logWarn(`Plugin ${plugin.id} requires you to add \n${xml} in the existing ${chalk.bold(configElement.$.parent)} array of your Info.plist to work`);
         }
     } else {
       logPossibleMissingItem(configElement, plugin);
@@ -244,7 +262,7 @@ function logPossibleMissingItem (configElement: any, plugin: Plugin) {
   let xml = buildConfigFileXml(configElement);
   xml = getConfigFileTagContent(xml);
   xml = removeOuterTags(xml);
-  logInfo(`Plugin ${plugin.id} might require you to add ${xml} in the existing ${chalk.bold(configElement.$.parent)} entry of your Info.plist to work`);
+  logWarn(`Plugin ${plugin.id} might require you to add ${xml} in the existing ${chalk.bold(configElement.$.parent)} entry of your Info.plist to work`);
 }
 
 function buildConfigFileXml(configElement: any) {
@@ -272,7 +290,7 @@ export async function checkAndInstallDependencies(config: Config, plugins: Plugi
     if (p.xml['dependency']) {
       allDependencies = allDependencies.concat(p.xml['dependency']);
     }
-    allDependencies = allDependencies.filter((dep: any) => !getIncompatibleCordovaPlugins().includes(dep.$.id) && incompatible.filter(p => p.id === dep.$.id || p.xml.$.id === dep.$.id).length === 0);
+    allDependencies = allDependencies.filter((dep: any) => !getIncompatibleCordovaPlugins(platform).includes(dep.$.id) && incompatible.filter(p => p.id === dep.$.id || p.xml.$.id === dep.$.id).length === 0);
     if (allDependencies) {
       await Promise.all(allDependencies.map(async (dep: any) => {
         if (cordovaPlugins.filter(p => p.id === dep.$.id || p.xml.$.id === dep.$.id).length === 0) {
@@ -296,9 +314,13 @@ export async function checkAndInstallDependencies(config: Config, plugins: Plugi
   return needsUpdate;
 }
 
-export function getIncompatibleCordovaPlugins(){
-  return ["cordova-plugin-statusbar", "cordova-plugin-splashscreen", "cordova-plugin-ionic-webview",
+export function getIncompatibleCordovaPlugins(platform: string){
+  let pluginList = ["cordova-plugin-statusbar", "cordova-plugin-splashscreen", "cordova-plugin-ionic-webview",
   "cordova-plugin-crosswalk-webview", "cordova-plugin-wkwebview-engine", "cordova-plugin-console",
   "cordova-plugin-compat", "cordova-plugin-music-controls", "cordova-plugin-add-swift-support",
   "cordova-plugin-ionic-keyboard", "cordova-plugin-braintree"];
+  if (platform === "ios") {
+    pluginList.push("cordova-plugin-googlemaps");
+  }
+  return pluginList;
 }

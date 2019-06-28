@@ -22,7 +22,7 @@ export async function findXcodePath(config: Config): Promise<string | null> {
 
 export async function checkCocoaPods(config: Config): Promise<string | null> {
   config;
-  if (!await isInstalled('pod')) {
+  if (!await isInstalled('pod') && config.cli.os === 'mac') {
     return 'cocoapods is not installed. For information: https://guides.cocoapods.org/using/getting-started.html#installation';
   }
   return null;
@@ -42,19 +42,20 @@ export function getIOSPlugins(allPlugins: Plugin[]): Plugin[] {
 }
 
 export function resolvePlugin(plugin: Plugin): Plugin | null {
+  const platform = 'ios';
   if (plugin.manifest && plugin.manifest.ios) {
     plugin.ios = {
       name: plugin.name,
       type: PluginType.Core,
-      path: plugin.manifest.ios.src ? plugin.manifest.ios.src : 'ios'
+      path: plugin.manifest.ios.src ? plugin.manifest.ios.src : platform
     };
   } else if (plugin.xml) {
     plugin.ios = {
       name: plugin.name,
       type: PluginType.Cordova,
-      path: 'src/ios'
+      path: 'src/' + platform
     };
-    if(getIncompatibleCordovaPlugins().includes(plugin.id) || !getPluginPlatform(plugin, 'ios')) {
+    if(getIncompatibleCordovaPlugins(platform).includes(plugin.id) || !getPluginPlatform(plugin, platform)) {
       plugin.ios.type = PluginType.Incompatible;
     }
   } else {

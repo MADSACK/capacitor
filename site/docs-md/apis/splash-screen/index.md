@@ -5,6 +5,7 @@ url: /docs/apis/splash-screen
 contributors:
   - mlynch
   - jcesarmobile
+  - trancee
 ---
 
 <plugin-platforms platforms="pwa,ios,android,electron"></plugin-platforms>
@@ -69,9 +70,47 @@ If you want to be sure the splash never hides before the app is fully loaded, se
 
 Then run `npx cap copy` to apply these changes.
 
+## Background Color
+
+In certain conditions, especially if the splash screen does not fully cover the device screen, it might happen that the app screen is visible around the corners (due to transparency). Instead of showing a transparent color, you can set a `backgroundColor` to cover those areas.
+
+Possible values for `backgroundColor` in your `capacitor.config.json` are either `#RGB` or `#ARGB`.
+
+## Spinner
+
+If you want to show a spinner on top of the splash screen, set `showSpinner` to `true` in your `capacitor.config.json`:
+
+```json
+{
+  "plugins": {
+    "SplashScreen": {
+      "showSpinner": true
+    }
+  }
+}
+```
+
+You can customize the appearance of the spinner with the following configuration.
+
+For Android, `androidSpinnerStyle` has the following options:
+- horizontal
+- small
+- large (default)
+- inverse
+- smallInverse
+- largeInverse
+
+For iOS, `iosSpinnerStyle` has the following options:
+- large (default)
+- small
+
+To set the color of the spinner use `spinnerColor`, values are either `#RGB` or `#ARGB`.
+
+Then run `npx cap copy` to apply these changes.
+
 ## Configuration
 
-These config parameters are availiable in `capacitor.config.json`:
+These config parameters are available in `capacitor.config.json`:
 
 ```json
 {
@@ -79,22 +118,23 @@ These config parameters are availiable in `capacitor.config.json`:
     "SplashScreen": {
       "launchShowDuration": 3000,
       "launchAutoHide": true,
+      "backgroundColor": "#ffffffff",
       "androidSplashResourceName": "splash",
-      "androidScaleType": "CENTER_CROP"
+      "androidScaleType": "CENTER_CROP",
+      "androidSpinnerStyle": "large",
+      "iosSpinnerStyle": "small",
+      "spinnerColor": "#999999",
+      "showSpinner": true
     }
   }
 }
 ```
 
-## Add your own splash screen images
-
-See [Josh Morony's blog post](https://www.joshmorony.com/adding-icons-splash-screens-launch-images-to-capacitor-projects/) on how to change it. 
-
 ### Android
 
 If your splash screen images aren't named "splash.png" but for example "screen.png" you have to change `"androidSplashResourceName": "screen"` in `capacitor.config.json` and change the following files in you're Android app as well:
 
-`android/app/src/main/res/drawable/launch_splash.xml` 
+`android/app/src/main/res/drawable/launch_splash.xml`
 
 replace
 ```xml
@@ -111,7 +151,7 @@ with
     />
 ```
 
-`android/app/src/main/res/values/styles.xml` 
+`android/app/src/main/res/values/styles.xml`
 
 replace
 ```xml
@@ -125,6 +165,12 @@ with
         <item name="android:background">@drawable/screen</item>
     </style>
 ```
+
+## Example Guides
+
+[Adding Your Own Icons and Splash Screen Images &#8250;](https://www.joshmorony.com/adding-icons-splash-screens-launch-images-to-capacitor-projects/)
+
+[Creating a Dynamic/Adaptable Splash Screen for Capacitor (Android) &#8250;](https://www.joshmorony.com/creating-a-dynamic-universal-splash-screen-for-capacitor-android/)
 
 ## API
 

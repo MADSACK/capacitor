@@ -27,11 +27,20 @@ Capacitor has some high level configuration options that are set in `capacitor.c
 
 The current ones you might configure are:
 
-```json
+```json5
 {
+  // The package name for Android and the bundle identifier for iOS.
+  "appId": "com.company.appname",
+
+  // Your app's name.
+  "appName": "Capacitor Kitchen Sink",
+
   // Sets the directory of your built web assets. This is the directory that will be
-  // used to run your app in a native environment
-  "webDir": "public",
+  // used to run your app in a native environment.
+  "webDir": "www",
+
+  // The JavaScript package manager to use, either npm or yarn.
+  "npmClient": "npm",
 
   // Whether to use capacitor.js as a bundle that is copied to your web code,
   // or require it to be bundled/imported through a typical
@@ -44,7 +53,7 @@ The current ones you might configure are:
   // On Windows, we aren't able to automatically open Android Studio
   // without knowing the full path. The default is set to the default
   // Android Studio install path, but you may change it manually.
-  "windowsAndroidStudioPath": 'C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe',
+  "windowsAndroidStudioPath": "C:\Program Files\Android\Android Studio\bin\studio64.exe",
 
   // Server object contains port and url configurations 
   "server": {
@@ -52,7 +61,7 @@ The current ones you might configure are:
     "url": "http://192.168.1.33:8100",
     // You can configure the local hostname, but it's recommended to keep localhost
     // as it allows to run web APIs that require a secure context such as
-    // navigator.geolocation and MediaDevices.getUserMedia
+    // navigator.geolocation and MediaDevices.getUserMedia.
     "hostname": "app",
     // Normally all external URLs are opened in the browser. By setting this option, you tell
     // Capacitor to open URLs belonging to these hosts inside its WebView.
@@ -62,7 +71,11 @@ The current ones you might configure are:
       "192.0.2.1"
     ]
   },
+  // Background color of Capacitor WebView for both iOS and Android unless also declared inside ios or android objects
+  "backgroundColor": "#ffffffff",
   "android": {
+    // Background color of Capacitor WebView for Android only
+    "backgroundColor": "#ffffffff",
     // On Android, if you are loading the app from a remote/testing server from https
     // protocol, you need to enable mixed content mode to allow the WebView to load
     // files from different schemes such as capacitor-content:// or capacitor-file://
@@ -78,6 +91,8 @@ The current ones you might configure are:
     "webContentsDebuggingEnabled": true
   },
   "ios": {
+    // Background color of Capacitor WebView for iOS only
+    "backgroundColor": "#ffffffff",
     // Configure the Swift version to be used for Cordova plugins.
     // Default is 4.0
     "cordovaSwiftVersion": "3.0",
